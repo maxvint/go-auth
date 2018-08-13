@@ -5,6 +5,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"os"
 	"runtime"
+
+	"goauth/controllers"
 )
 
 func main() {
@@ -25,9 +27,11 @@ func StartGin() {
 		c.String(200, "Hello Auth API")
 	})
 
-  v1 := router.Group("v1") {
-    v1.GET("/todos", controllers.IndexTodos)
-  }
+	v1 := router.Group("v1")
+	{
+		v1.GET("/todos", controllers.IndexTodos)
+		v1.POST("/todos", controllers.CreateTodo)
+	}
 
 	port := os.Getenv("PORT")
 	if len(port) == 0 {
