@@ -7,6 +7,7 @@ import (
 
 	"goauth/app"
 	"goauth/models"
+	"goauth/utils"
 )
 
 func IndexTodos(c *gin.Context) {
@@ -16,15 +17,16 @@ func IndexTodos(c *gin.Context) {
 func CreateTodo(c *gin.Context) {
 	var todo models.Todo
 
-	fmt.Println(todo)
-
 	if err := c.BindJSON(&todo); err != nil {
 		return
 	}
 
 	if err := todo.Create(app.GetDB(c)); err != nil {
+		utils.AbortWithPublicError(c, http.StatusInternalServerError, err, "Couldn't create the todo")
 		return
 	}
+
+	fmt.Println("323232323232")
 
 	c.JSON(http.StatusCreated, todo)
 }

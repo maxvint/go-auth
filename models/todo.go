@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -58,6 +59,7 @@ func FindTodos(db *mgo.Database) ([]Todo, error) {
 }
 
 func (todo *Todo) Create(db *mgo.Database) error {
+	fmt.Println(todo)
 	todo.Id = bson.NewObjectId()
 	err := db.C("todos").Insert(&todo)
 
