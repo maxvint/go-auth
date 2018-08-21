@@ -1,2 +1,2 @@
 # goauth
-Auth write by golang.
+OAuth write by golang.

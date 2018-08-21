@@ -2,10 +2,10 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
-	"net/http"
 	"goauth/app"
 	"goauth/models"
 	"log"
+	"net/http"
 )
 
 func IndexTodos(c *gin.Context) {

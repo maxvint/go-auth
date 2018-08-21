@@ -6,10 +6,10 @@ import (
 	"os"
 	"runtime"
 
+	"goauth/app"
 	"goauth/config"
-	"goauth/middlewares"
 	"goauth/controllers"
-	"go_todo_api/app"
+	"goauth/middlewares"
 )
 
 func main() {
@@ -44,6 +44,8 @@ func StartGin() {
 	{
 		v1.GET("/todos", controllers.IndexTodos)
 		v1.POST("/todos", controllers.CreateTodo)
+		v1.POST("/sign-in", controllers.SignIn)
+		v1.POST("/sign-up", controllers.SignUp)
 	}
 
 	port := os.Getenv("PORT")
