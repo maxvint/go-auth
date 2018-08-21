@@ -1,13 +1,11 @@
 package controllers
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
-
 	"goauth/app"
 	"goauth/models"
-	"goauth/utils"
+	"log"
 )
 
 func IndexTodos(c *gin.Context) {
@@ -18,15 +16,14 @@ func CreateTodo(c *gin.Context) {
 	var todo models.Todo
 
 	if err := c.BindJSON(&todo); err != nil {
+		log.Fatalln("Todo bind json error", err)
 		return
 	}
 
 	if err := todo.Create(app.GetDB(c)); err != nil {
-		utils.AbortWithPublicError(c, http.StatusInternalServerError, err, "Couldn't create the todo")
+		log.Fatalln("Create Todo Model err", err)
 		return
 	}
-
-	fmt.Println("323232323232")
 
 	c.JSON(http.StatusCreated, todo)
 }

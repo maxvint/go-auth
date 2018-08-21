@@ -6,11 +6,15 @@ import (
 	"os"
 	"runtime"
 
+	"goauth/config"
+	"goauth/middlewares"
 	"goauth/controllers"
+	"go_todo_api/app"
 )
 
 func main() {
 	ConfigRuntime()
+	ConfigEnv()
 	StartGin()
 }
 
@@ -20,8 +24,17 @@ func ConfigRuntime() {
 	fmt.Printf("Runing with %d CPUs\n", numCPU)
 }
 
+func ConfigEnv() {
+	config.SetEnv()
+}
+
 func StartGin() {
+	app.InitApp()
+	defer app.CloseApp()
+
 	router := gin.Default()
+
+	router.Use(middlewares.ConnectDB(app.DBSession))
 
 	router.GET("/", func(c *gin.Context) {
 		c.String(200, "Hello Auth API")

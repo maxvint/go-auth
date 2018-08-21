@@ -18,11 +18,15 @@ func InitApp() {
 
 func InitDB() {
 	var err error
-	DBSession, err = mgo.DialWithTimeout(os.Getenv("MONGO_HOST")+":"+os.Getenv("MONGO_PORT"), mgoTimeout)
+	DBSession, err = mgo.DialWithTimeout(os.Getenv("MONGO_HOST")+":"+os.Getenv("MONGO_PORT"), 10*time.Second)
 
 	if err != nil {
 		panic(err)
 	}
+}
+
+func CloseApp() {
+	CloseDB()
 }
 
 func GetDB(c *gin.Context) *mgo.Database {
@@ -40,4 +44,8 @@ func MigrateDB() {
 		Sparse:     false,
 		Background: true,
 	})
+}
+
+func CloseDB() {
+	DBSession.Close()
 }
