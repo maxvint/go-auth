@@ -1,29 +1,19 @@
 package controllers
 
 import (
+	"code.bigogo.com/gopkg/errno"
 	"github.com/gin-gonic/gin"
-	"goauth/app"
-	"goauth/models"
-	"log"
+	"github.com/yuwenhui/goauth/dal"
 	"net/http"
 )
 
-func IndexTodos(c *gin.Context) {
-	c.JSON(http.StatusOK, "Index Todos")
-}
+func IndexTodos(c *gin.Context) (interface{}, *errno.ErrNo) {
+	c.JSON(http.StatusOK, "Index Todo")
+	todos, err := dal.GetTodos()
 
-func CreateTodo(c *gin.Context) {
-	var todo models.Todo
-
-	if err := c.BindJSON(&todo); err != nil {
-		log.Fatalln("Todo bind json error", err)
-		return
+	if err != nil {
+		return nil, errno.DBError
 	}
 
-	if err := todo.Create(app.GetDB(c)); err != nil {
-		log.Fatalln("Create Todo Model err", err)
-		return
-	}
-
-	c.JSON(http.StatusCreated, todo)
+	return todos, nil
 }

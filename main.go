@@ -1,56 +1,34 @@
 package main
 
 import (
-	"fmt"
+	"code.bigogo.com/gopkg/ginlog"
+	"code.bigogo.com/gopkg/logs"
+	"flag"
 	"github.com/gin-gonic/gin"
-	"os"
-	"runtime"
-
-	"goauth/app"
-	"goauth/config"
-	"goauth/controllers"
-	"goauth/middlewares"
+	"net"
+	"net/http"
 )
 
 func main() {
-	ConfigRuntime()
-	ConfigEnv()
-	StartGin()
-}
+	defer logs.Flush()
 
-func ConfigRuntime() {
-	numCPU := runtime.NumCPU()
-	runtime.GOMAXPROCS(numCPU)
-	fmt.Printf("Runing with %d CPUs\n", numCPU)
-}
+	var (
+		flagAddress = flag.String("a", ":9000", "http address")
+	)
+	flag.Parse()
 
-func ConfigEnv() {
-	config.SetEnv()
-}
+	ln, err := net.Listen("tcp", *flagAddress)
 
-func StartGin() {
-	app.InitApp()
-	defer app.CloseApp()
-
-	router := gin.Default()
-
-	router.Use(middlewares.ConnectDB(app.DBSession))
-
-	router.GET("/", func(c *gin.Context) {
-		c.String(200, "Hello Auth API")
-	})
-
-	v1 := router.Group("v1")
-	{
-		v1.GET("/todos", controllers.IndexTodos)
-		v1.POST("/todos", controllers.CreateTodo)
-		v1.POST("/sign-in", controllers.SignIn)
-		v1.POST("/sign-up", controllers.SignUp)
+	if err != nil {
+		logs.Fatalf("create listener failed: %s", *flagAddress)
+		logs.Flush()
+		return
 	}
 
-	port := os.Getenv("PORT")
-	if len(port) == 0 {
-		port = "3000"
-	}
-	router.Run(":" + port)
+	logs.Infof("listening on %s", ln.Addr())
+	r := gin.Default()
+	CreateRouter(r)
+
+	logs.Errorf("server running with error: %v", http.Serve(ln, r))
+	ginlog.CloseLog()
 }
